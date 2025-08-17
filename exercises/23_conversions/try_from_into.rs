@@ -28,14 +28,46 @@ enum IntoColorError {
 impl TryFrom<(i16, i16, i16)> for Color {
     type Error = IntoColorError;
 
-    fn try_from(tuple: (i16, i16, i16)) -> Result<Self, Self::Error> {}
+    fn try_from(tuple: (i16, i16, i16)) -> Result<Self, Self::Error> {
+        let (r, g, b) = tuple;
+
+        fn to_u8(value: i16) -> Result<u8, IntoColorError> {
+            if (0..=255).contains(&value) {
+                Ok(value as u8)
+            } else {
+                Err(IntoColorError::IntConversion)
+            }
+        }
+
+        Ok(Self {
+            red: to_u8(r)?,
+            green: to_u8(g)?,
+            blue: to_u8(b)?,
+        })
+    }
 }
 
 // TODO: Array implementation.
 impl TryFrom<[i16; 3]> for Color {
     type Error = IntoColorError;
 
-    fn try_from(arr: [i16; 3]) -> Result<Self, Self::Error> {}
+    fn try_from(arr: [i16; 3]) -> Result<Self, Self::Error> {
+        let [r, g, b] = arr;
+
+        fn to_u8(value: i16) -> Result<u8, IntoColorError> {
+            if (0..=255).contains(&value) {
+                Ok(value as u8)
+            } else {
+                Err(IntoColorError::IntConversion)
+            }
+        }
+
+        Ok(Self {
+            red: to_u8(r)?,
+            green: to_u8(g)?,
+            blue: to_u8(b)?,
+        })
+    }
 }
 
 // TODO: Slice implementation.
@@ -43,7 +75,29 @@ impl TryFrom<[i16; 3]> for Color {
 impl TryFrom<&[i16]> for Color {
     type Error = IntoColorError;
 
-    fn try_from(slice: &[i16]) -> Result<Self, Self::Error> {}
+    fn try_from(slice: &[i16]) -> Result<Self, Self::Error> {
+        if slice.len() != 3 {
+            return Err(IntoColorError::BadLen);
+        }
+
+        let r = slice[0];
+        let g = slice[1];
+        let b = slice[2];
+
+        fn to_u8(value: i16) -> Result<u8, IntoColorError> {
+            if (0..=255).contains(&value) {
+                Ok(value as u8)
+            } else {
+                Err(IntoColorError::IntConversion)
+            }
+        }
+
+        Ok(Self {
+            red: to_u8(r)?,
+            green: to_u8(g)?,
+            blue: to_u8(b)?,
+        })
+    }
 }
 
 fn main() {
